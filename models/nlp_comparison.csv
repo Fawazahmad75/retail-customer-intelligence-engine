@@ -1,0 +1,3 @@
+Model,Accuracy,F1 (weighted),Negative Recall,Negative Precision,AUC
+Logistic Regression,0.864,0.872,0.821,0.589,0.926
+Random Forest,0.862,0.838,0.334,0.772,0.906
