@@ -19,6 +19,44 @@ def load_models():
     return churn_model, text_model, vectorizer
 
 churn_model, text_model, vectorizer = load_models()
+def calculate_rfm_segment(tenure, days_since, order_count, cashback):
+    """Calculate RFM segment based on customer behavior"""
+    if days_since <= 2: r = 5
+    elif days_since <= 5: r = 4
+    elif days_since <= 10: r = 3
+    elif days_since <= 20: r = 2
+    else: r = 1
+    
+    if order_count >= 15: f = 5
+    elif order_count >= 10: f = 4
+    elif order_count >= 5: f = 3
+    elif order_count >= 2: f = 2
+    else: f = 1
+    
+    if cashback >= 250: m = 5
+    elif cashback >= 200: m = 4
+    elif cashback >= 150: m = 3
+    elif cashback >= 100: m = 2
+    else: m = 1
+    
+    score = r + f + m
+    
+    if r >= 4 and f >= 4 and m >= 4:
+        return 'Champions', score
+    elif f >= 3 and m >= 3:
+        return 'Loyal', score
+    elif r >= 4 and f <= 2:
+        return 'New Customers', score
+    elif r <= 2 and f >= 3:
+        return 'At Risk', score
+    elif r <= 2 and f <= 2:
+        return 'Lost', score
+    else:
+        return 'Needs Attention', score
+
+def calculate_clv(cashback, order_count, tenure):
+    """Estimate customer lifetime value"""
+    return cashback * order_count * (tenure / 12)
 
 # ============ HEADER ============
 st.title("🛒 Retail Customer Intelligence Engine")
