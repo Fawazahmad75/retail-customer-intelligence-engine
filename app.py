@@ -208,6 +208,10 @@ with tab3:
         features[10] = f_orders
         features[11] = f_days
         features[12] = f_cashback
+        features[13] = 1  # PreferredLoginDevice_Mobile Phone (most common)
+        features[18] = 1  # PreferredPaymentMode_Debit Card (common)
+        features[24] = 1  # PreferredOrderCat_Mobile (common)
+        features[28] = 1  # MaritalStatus_Single
         
         # Run all models
         churn_pred = churn_model.predict([features])[0]
