@@ -30,8 +30,7 @@ and feedback signal retention risk.
 """)
 
 # ============ TABS ============
-tab1, tab2, tab3 = st.tabs(["🎯 Churn Predictor", "💬 Review Classifier", "📊 About the Project"])
-
+tab1, tab2, tab3, tab4 = st.tabs(["🎯 Churn Predictor", "💬 Review Classifier", "🔮 Full Analysis", "📊 About"])
 # ============ TAB 1: CHURN PREDICTOR ============
 with tab1:
     st.header("Customer Churn Prediction")
@@ -132,8 +131,124 @@ with tab2:
         else:
             st.warning("Please enter a review to classify.")
 
-# ============ TAB 3: ABOUT ============
+# ============ TAB 3: FULL ANALYSIS ============
 with tab3:
+    st.header("Complete Customer Intelligence Report")
+    st.write("Combine behavioral data AND customer feedback for the full picture.")
+    
+    st.subheader("Customer Behavior Data")
+    fcol1, fcol2 = st.columns(2)
+    
+    with fcol1:
+        f_tenure = st.slider("Tenure (months)", 0, 60, 12, key="f_tenure")
+        f_satisfaction = st.slider("Satisfaction Score", 1, 5, 3, key="f_sat")
+        f_complain = st.selectbox("Filed Complaint?", [0, 1], format_func=lambda x: "Yes" if x else "No", key="f_comp")
+        f_days = st.number_input("Days Since Last Order", 0, 60, 5, key="f_days")
+    
+    with fcol2:
+        f_orders = st.number_input("Total Orders", 1, 50, 5, key="f_ord")
+        f_cashback = st.number_input("Cashback ($)", 0.0, 500.0, 150.0, key="f_cash")
+        f_addresses = st.number_input("Number of Addresses", 1, 20, 3, key="f_addr")
+        f_city = st.selectbox("City Tier", [1, 2, 3], key="f_city")
+    
+    st.subheader("Customer Feedback")
+    f_review = st.text_area(
+        "Latest customer review or feedback:",
+        placeholder="Paste the customer's most recent review or support message...",
+        height=100,
+        key="f_review"
+    )
+    
+    if st.button("🚀 Generate Full Intelligence Report", type="primary"):
+        # Build features
+        features = np.zeros(29)
+        features[0] = f_tenure
+        features[1] = f_city
+        features[5] = f_satisfaction
+        features[6] = f_addresses
+        features[7] = f_complain
+        features[10] = f_orders
+        features[11] = f_days
+        features[12] = f_cashback
+        
+        # Run all models
+        churn_pred = churn_model.predict([features])[0]
+        churn_prob = churn_model.predict_proba([features])[0][1]
+        segment, rfm_score = calculate_rfm_segment(f_tenure, f_days, f_orders, f_cashback)
+        clv = calculate_clv(f_cashback, f_orders, f_tenure)
+        
+        # Sentiment analysis
+        sentiment_label = "Not provided"
+        sentiment_confidence = 0
+        if f_review.strip():
+            review_tfidf = vectorizer.transform([f_review])
+            sent_pred = text_model.predict(review_tfidf)[0]
+            sent_proba = text_model.predict_proba(review_tfidf)[0]
+            sentiment_confidence = max(sent_proba)
+            
+            if sentiment_confidence < 0.65:
+                sentiment_label = "Uncertain"
+            elif sent_pred == 1:
+                sentiment_label = "Positive"
+            else:
+                sentiment_label = "Negative"
+        
+        st.markdown("---")
+        st.subheader("📋 Intelligence Report")
+        
+        # Top metrics
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Churn Risk", f"{churn_prob:.1%}")
+        m2.metric("Segment", segment)
+        m3.metric("Lifetime Value", f"${clv:,.0f}")
+        m4.metric("Review Sentiment", sentiment_label)
+        
+        # Combined insight
+        st.markdown("### 🎯 Combined Insight")
+        
+        risk_high = churn_prob > 0.5
+        sentiment_negative = sentiment_label == "Negative"
+        
+        if risk_high and sentiment_negative:
+            st.error(f"""
+            **🚨 CRITICAL: Immediate intervention needed**
+            
+            This is a {segment} customer with {churn_prob:.0%} churn risk AND negative feedback.
+            Their behavior signals match what they're saying — they're actively unhappy and likely to leave.
+            
+            **Recommended action:** Personal outreach within 24 hours. Address their specific complaint
+            and offer a meaningful retention incentive. Estimated revenue at risk: ${clv:,.2f}
+            """)
+        elif risk_high and not sentiment_negative:
+            st.warning(f"""
+            **⚠️ Behavioral risk detected — feedback doesn't show it yet**
+            
+            This {segment} customer shows {churn_prob:.0%} churn risk based on behavior patterns,
+            but their feedback isn't negative. They may be quietly disengaging.
+            
+            **Recommended action:** Proactive outreach with personalized offer. Survey to identify hidden issues.
+            """)
+        elif not risk_high and sentiment_negative:
+            st.warning(f"""
+            **💬 Vocal complaint, but behavior is stable**
+            
+            This {segment} customer is venting frustration but their purchase behavior is healthy.
+            They may just need acknowledgment and a quick fix.
+            
+            **Recommended action:** Respond to feedback promptly. A small gesture goes a long way.
+            """)
+        else:
+            st.success(f"""
+            **✅ Healthy customer**
+            
+            This {segment} customer shows low churn risk and positive/neutral feedback.
+            Lifetime value: ${clv:,.2f}
+            
+            **Recommended action:** Maintain engagement. Consider for loyalty program if Champion/Loyal segment.
+            """)
+
+# ============ TAB 4: ABOUT ============
+with tab4:
     st.header("About This Project")
     st.markdown("""
     ### What This Is
