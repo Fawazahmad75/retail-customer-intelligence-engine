@@ -2,7 +2,7 @@
 
 > An end-to-end AI system that predicts customer churn, segments customers by behavior, estimates lifetime value, and classifies customer feedback sentiment — combining structured behavioral data with unstructured text into a unified customer intelligence platform.
 
-**🔗 [Live Demo](https://retail-cutomer-engine.streamlit.app/)** | **[GitHub Repository](https://github.com/Fawazahmad75/retail-customer-intelligence-engine)**
+**🔗 [Live Demo]https://retailq.streamlit.app/** | **[GitHub Repository](https://github.com/Fawazahmad75/retail-customer-intelligence-engine)**
 
 ---
 
