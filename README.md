@@ -302,7 +302,8 @@ Built by **Fawaz Ahmad** as part of my application for the **Junior Applied AI E
 
 Currently working at Walmart, where the patterns I see daily inspired this project. I'm passionate about applying AI to real business problems where the stakes are tangible and the impact is measurable.
 
-- **GitHub:** [@Fawazahmad75]
-- **Live Demo:** (https://github.com/Fawazahmad75)
+- **GitHub:** [@Fawazahmad75](https://github.com/Fawazahmad75)
+- **Live Demo:** [retail-cutomer-engine.streamlit.app](https://retailq.streamlit.app/)
 
 ---
+
